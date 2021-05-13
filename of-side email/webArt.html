@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='webArt.css'>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@2.3.2/dist/email.min.js"></script>
+    <script src='webArt.js'></script>
+    <script src='webArtEm.js'></script>
+</head>
+<body>
+    <div class="div_animation" id="div_animation" onclick="div_copy(this)" >
+    </div>
+
+    <div class="div_cell" id="div_cell">
+    </div>
+
+    <div class="div_paint" id="div_paint">
+    </div>
+
+    <div class="div_chapter" id="div_chapter">
+    </div>
+
+    <div class="div_container" id = "div_container" >
+        <div class="div_content1" id = "div_content1" >
+            <input class="ipt_nm" id="ipt_nm" placeholder="이름" onmouseout="validation(this)" >
+        </div>
+        <div class="div_content2" id = "div_content2" >
+            <input class="ipt_pw" id="ipt_pw" placeholder="생일 (ex.0909)" onmouseout="validation(this)" >
+        </div>
+        <div class="div_content3"  id = "div_content3" >
+            <input class="ipt_em" id="ipt_em" placeholder="email@naver.com" onmouseout="" >
+        </div>
+        <div class="div_content4" id = "div_content4" >
+            <input class="ipt_bt" id="ipt_bt" type="button" onclick="bt()" value="next" >
+        </div>
+    </div>
+    <div class="div_textArea" id="div_textArea" >
+        <textarea class="ta_diary" id="ta_diary" ></textarea>
+        <input class="ipt_diary" id="ipt_diary" type="button" >
+    </div>
+</body>
+</html>
