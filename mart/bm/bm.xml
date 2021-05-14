@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sist">
+    
+    <select id="basketSelect" resultType="sist.com.bm.BmBasketBean">
+    	select no,ownerno,productcode,productquantity,productname,productprice,productimage
+    	from bmbasketproduct
+    	where ownerno=1
+    </select>
+   
+    
+    <delete id="basketDelete" parameterType="int">
+    	delete from bmbasketproduct
+        where no=#{no}
+    </delete>
+    
+    <update id="basketModi" parameterType="HashMap">
+    	update bmbasketproduct set productquantity=#{productquantity}
+    	where no=#{no}
+    </update>
+    
+    <insert id="basketInsert" parameterType="sist.com.bm.BmBasketBean">
+    	insert into bmbasketproduct values(6,#{ownerno},#{productcode},#{productquantity},#{productname},#{productprice},#{productimage})
+    </insert>
+    
+    <select id="orderListToBasket" parameterType="List" resultType="sist.com.bm.BmBasketBean">
+    	select no,ownerno,productcode,productquantity,productname,productprice,productimage
+    	from bmbasketproduct
+    	where no in 
+    	<foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
+    	#{item}  
+    	</foreach>
+    </select>
+    
+    <select id="supportSelect" resultType="sist.com.bm.BmSupportBean">
+    	select * from bmsupport
+    </select>
+    
+    <insert id="couponInsert" parameterType="sist.com.bm.BmCouponBean">
+    	insert into coupon values(coupon_seq.nextval,#{ownerno},#{discount},#{cname},sysdate+2)
+    </insert>
+    
+    <select id="couponTotalSelect" resultType="int">
+    	select count(*) from coupon
+    </select> 
+    
+    <select id="couponSelect" parameterType="HashMap" resultType="sist.com.bm.BmCouponBean">
+    	select rm,no,ownerno,discount,cname,enddate 
+    	from(select rownum rm,no,ownerno,discount,cname,enddate from coupon order by no)
+        where rm BETWEEN #{start} and #{end}
+    </select>
+    
+    <select id="productSelect" parameterType="list" resultType="sist.com.bm.BmBasketBean">
+    	select no,ownerno,productcode,productquantity,productname,productprice,productimage
+    	from bmbasketproduct
+    	where no in
+    	<foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
+    	#{item}
+    	</foreach>
+    </select>
+    
+   <insert id="productOrderInsert" parameterType="sist.com.bm.BmBasketBean">
+   		insert into ORDERLIST values(ORDERLIST_NO_seq.nextval,#{ownerno},#{productcode},#{productquantity},#{productname},#{productprice},sysdate,'완료')
+   </insert>
+        
+
+   
+   <update id="supportPriceInsert" parameterType="HashMap">
+   	    update bmownersupport set supportprice=#{supportprice}
+    	where ownerno=#{ownerno}
+   </update> 
+   
+   <select id="supportRriceSelect" parameterType="int" resultType="int">
+   		select supportprice from bmownersupport where ownerno=#{ownerno}
+   </select>    
+        
+   <select id="orderDiscountSelect" parameterType="int" resultType="int">
+   		select sum(s) from(select (productquantity*productprice)s from orderlist where ownerno=#{ownerno})
+   </select>     
+        
+   <select id="selectSupportPrice" parameterType="String" resultType="int">
+   		select supportprice from bmsupport where name=#{name}
+   </select>
+   
+   <update id="selectSupportPriceUpdate" parameterType="HashMap">
+   	    update bmsupport set supportprice=#{supportprice} where name=#{name}
+   </update>     
+   
+   
+   
+   
+    <select id="productTotalCount" resultType="int">
+         SELECT COUNT(*) FROM BMSTOREPRODUCT
+    </select>
+    <select id="productSearchDao" resultType="sist.com.bm.StoreProductBean" parameterType="HashMap">      
+      SELECT RM,CATEGORY, NO, PRODUCTNAME, PRODUCTCODE, PRODUCTPRICE, PRODUCTUNIT, PRODUCTDELIVERY, PRODUCTCOUNT, PRODUCTPRODUCTION, PRODUCTIMAGE
+      FROM(
+      SELECT ROWNUM RM,CATEGORY, NO, PRODUCTNAME, PRODUCTCODE, PRODUCTPRICE, PRODUCTUNIT, PRODUCTDELIVERY, PRODUCTCOUNT, PRODUCTPRODUCTION, PRODUCTIMAGE
+      FROM(
+      SELECT CATEGORY, NO, PRODUCTNAME, PRODUCTCODE, PRODUCTPRICE, PRODUCTUNIT, PRODUCTDELIVERY, PRODUCTCOUNT, PRODUCTPRODUCTION, PRODUCTIMAGE
+      FROM BMSTOREPRODUCT
+      WHERE PRODUCTNAME LIKE '%'||#{productName}||'%'
+      <if test="category!='all'">
+      AND CATEGORY = #{category}
+      </if>
+      <if test="made!=''">
+      AND PRODUCTPRODUCTION = #{made}
+      </if>
+      <if test="secondMoney!=0">
+      AND PRODUCTPRICE BETWEEN #{firstMoney} AND #{secondMoney}
+      </if>
+      ORDER BY PRODUCTNAME))
+      WHERE RM BETWEEN #{start} AND #{end}
+</select>
+   <select id="myPageSelect" parameterType="HashMap" resultType="sist.com.bm.BmMyPageBean">
+   		SELECT RM,NO,OWNERNO,PRODUCTCODE,PRODUCTQUANTITY,PRODUCTNAME,PRODUCTPRICE,ORDERDATE,DELEVERY
+        FROM(
+        SELECT ROWNUM RM, NO,OWNERNO,PRODUCTCODE,PRODUCTQUANTITY,PRODUCTNAME,PRODUCTPRICE,ORDERDATE,DELEVERY
+        FROM ORDERLIST
+        WHERE OWNERNO=#{owner}
+        ORDER BY NO)
+        WHERE RM BETWEEN #{start} AND #{end}  
+   </select>
+ <select id="myOrderAllCountDao" parameterType="int" resultType="int">
+ SELECT COUNT(*)FROM ORDERLIST
+ WHERE OWNERNO = #{VALUE}
+ </select>
+ <select id="latterWriteDao" parameterType="int" resultType="sist.com.bm.BmMyPageBean" >
+SELECT NO,OWNERNO,PRODUCTCODE,PRODUCTQUANTITY,PRODUCTNAME,PRODUCTPRICE,ORDERDATE,DELEVERY
+FROM ORDERLIST
+WHERE NO=#{VALUE}  
+</select>
+<select id="latterPriceDao" parameterType="String" resultType="int"> <!--제품의 금액을 뽑아주는 코드  -->
+SELECT PRODUCTPRICE FROM BMSTOREPRODUCT
+WHERE PRODUCTCODE = #{VALUE}
+</select>
+      
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
